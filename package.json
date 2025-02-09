@@ -1,0 +1,29 @@
+{
+  "name": "lostcity.fyi",
+  "version": "1.0.0",
+  "description": "Generated game details for 2004.lostcity.rs - Fan site, unaffiliated with lostcity.rs",
+  "main": "./src/lostcity-fyi.ts",
+  "scripts": {
+    "start": "node dist/lostcity-fyi.js",
+    "build": "tsc"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kylmp/lostcity.fyi.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/kylmp/lostcity.fyi/issues"
+  },
+  "homepage": "https://github.com/kylmp/lostcity.fyi#readme",
+  "devDependencies": {
+    "@types/express": "^5.0.0",
+    "@types/node": "^22.13.1",
+    "typescript": "^5.7.3"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2"
+  }
+}

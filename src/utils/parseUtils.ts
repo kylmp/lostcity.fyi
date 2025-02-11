@@ -29,5 +29,15 @@ export function getIdentifierLines(fileLines: string[]): {[identifierId: string]
 }
 
 export function mapBooleanValue(values: string[]) {
-  return (!values || !values[0] || values[0] === 'no' || values[0] === 'false') ? false : true;
+  if (!values || !values[0]) {
+    return false;
+  }
+  if (values[0] === '^true' || values[0] === 'yes' || values[0] === 'true') {
+    return true;
+  }
+  return false;
+}
+
+export function mapXpMultiplier(values: string[]) {
+  return Number(values[0]) / 1000;
 }

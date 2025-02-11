@@ -27,10 +27,10 @@ export type Spawn = {
 }
 
 export type Stock = {
-  shopId: string,
-  shopName: string,
-  objectId: string,
-  objectName: string,
+  shopId?: string,
+  shopName?: string,
+  objectId?: string,
+  objectName?: string,
   amount: string,
   restock: string,
   basePrice: string,

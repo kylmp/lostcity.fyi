@@ -1,8 +1,13 @@
 import * as identifierCache from "../cache/identifierCache";
 import * as searchCache from "../cache/searchCache";
-import { parseMap, parseNpc, parseObj, parsePack, parseScripts } from "./parseSvc";
+import { IdentifierType } from "../types/identifiers";
+import { parseMapAndPack, parseScripts, parseConfig } from "./parseSvc";
+import { buildSearchCache } from "./searchSvc";
+
+export var updatedTime: string;
 
 export const rebuild = (): void => {
+  updatedTime = new Date().toISOString();
   clearCaches();
   parseFilesAndBuildIdentifierCaches();
   buildSearchCache();
@@ -14,18 +19,9 @@ function clearCaches(): void {
 }
 
 function parseFilesAndBuildIdentifierCaches(): void {
-  parsePack();
-  parseMap();
-  parseNpc();
-  parseObj();
+  parseMapAndPack();
+  parseConfig(IdentifierType.object, 'obj');
+  parseConfig(IdentifierType.npc, 'npc');
+  parseConfig(IdentifierType.shop, 'inv');
   parseScripts();
-}
-
-function buildSearchCache(): void {
-  identifierCache.getAll().forEach(iden => {
-    Object.keys(iden.cache).forEach(key => {
-      const { id, name } = iden.get(key);
-      searchCache.put(iden.type, id, name);
-    });
-  });
 }

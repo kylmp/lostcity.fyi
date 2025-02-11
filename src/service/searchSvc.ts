@@ -1,11 +1,18 @@
-import { searchCache } from "../cache/searchCache";
+import * as identifierCache from "../cache/identifierCache";
+import * as searchCache from "../cache/searchCache";
 import { IdentifierType } from "../types/identifiers";
-import { SearchResult } from "../types/search";
+import { SearchData } from "../types/search";
 
-export const search = (searchTerm: string): SearchResult[] => {
+export const search = (searchTerm: string): SearchData[] => {
   const term = searchTerm.toLowerCase();
-  const results = searchCache.filter(data => {
-    return data.idName.toLowerCase().indexOf(term) >= 0
+  return searchCache.getAll().filter(data => data.name.toLowerCase().indexOf(term) >= 0);
+}
+
+export function buildSearchCache(): void {
+  identifierCache.getAll().forEach(iden => {
+    Object.keys(iden.cache).forEach(key => {
+      const { id, name } = iden.get(key);
+      searchCache.put(IdentifierType[iden.type], id, name);
+    });
   });
-  return results.map(data => <SearchResult>{name: data.idName, url: `${process.env.HOST_URL}/api/identifier?idName=${data.idName}&type=${IdentifierType[data.type]}`});
 }

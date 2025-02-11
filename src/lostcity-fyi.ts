@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import express from 'express';
 import apiRoutes from './routes/apiRoutes';
 import adminRoutes from './routes/adminRoutes';
@@ -7,21 +8,22 @@ import { IdentifierType } from './types/identifiers';
 import { getByType } from './cache/identifierCache';
 
 process.env.PORT = process.env.PORT || '3000'; 
-process.env.HOST_URL = process.env.HOST_URL || `http://localhost:${process.env.PORT}`;
 
 const app = express();
+app.set('trust proxy', '127.0.0.1');
 const adminApp = express();
+adminApp.set('trust proxy', '127.0.0.1');
 cacheSvc.rebuild();
 
 // Temporary "UI"
 app.get('/', (req, res) => {
+  const url = `${req.protocol}://${req.get('host')}`;
   let results = '';
   const term: string = req.query['term'] as string;
   if (term) {
     const searchResults = search(term);
     results = searchResults.map(result => {
-      const params = result.url.substring(result.url.indexOf('?')).split('&');
-      return `<a href="${process.env.HOST_URL}/?id=${params[0].substring(8)}&type=${params[1].substring(5)}">${result.name}</a>`;
+      return `<a href="${url}/?id=${result.id}&type=${result.type}">${result.name} (${result.type})</a>`;
     }).join('<br/>');
   }
 
@@ -29,20 +31,19 @@ app.get('/', (req, res) => {
   const id: string = req.query['id'] as string;
   const type: string = req.query['type'] as string;
   if (id && type) {
-    const t = type === 'npc' ? IdentifierType.npc : IdentifierType.object;
-    const i = getByType(t).get(id);
-    if (i) {
-      item = `<pre id="json">${JSON.stringify(i, undefined, 2)}</pre>`
-    }
+    const identifier = getByType(IdentifierType[type as keyof typeof IdentifierType]).get(id);
+    item = identifier ? `<pre id="json">${JSON.stringify(identifier, undefined, 2)}</pre>` : item;
   }
-  
+
   res.set('Content-Type', 'text/html');
   res.send(`
     <!DOCTYPE html><html><body>
-    <h3>Lostcity.fyl</h3><button type="submit" onclick="location.href='${process.env.HOST_URL}/'">Home</button>
+    <h3>Lostcity.fyi</h3>
+    <p>All data generated from the live game's source code. Website source code <a href="https://github.com/kylmp/lostcity.fyi">here</a>.</p>
+    <button type="submit" onclick="location.href='${url}/'">Home</button>
     <input type="text" id="search"><button type="button" onclick="submit()">Search</button><br/><br/>
     ${results}${item}
-    <script>function submit() {window.location.href = '${process.env.HOST_URL}/?term=' + document.getElementById("search").value;}</script>
+    <script>function submit() {window.location.href = '${url}/?term=' + document.getElementById("search").value;}</script>
     </body></html>
   `);
 });
@@ -50,13 +51,22 @@ app.get('/', (req, res) => {
 app.use('/api', apiRoutes);
 
 app.listen(process.env.PORT, () => {
-  console.log(`Server is running on ${process.env.HOST_URL}`);
+  console.log(`Server is running on ${process.env.PORT}`);
 });
 
 adminApp.use('/', adminRoutes);
 
 if (process.env.ADMIN_PORT) {
   adminApp.listen(process.env.ADMIN_PORT, () => {
-    console.log(`Admin server is running on ${process.env.ADMIN_HOST_URL || `http://localhost${process.env.ADMIN_PORT}`}`);
+    console.log(`Admin server is running on ${process.env.ADMIN_PORT}`);
   });
 }
+
+process.on('SIGTERM', () => {
+  console.log('SIGTERM - Shutting down');
+  process.exit();
+});
+process.on('SIGINT', () => {
+  console.log('SIGINT - Shutting down');
+  process.exit();
+});

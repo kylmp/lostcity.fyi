@@ -1,21 +1,50 @@
 export enum IdentifierType {
   object,
-  npc
+  npc,
+  shop
 }
 
-export type Identifier = {
-  id: string,
-  packId: string,
-  name: string,
-  description: string,
-  details: any,
-  image?: string
+export interface ConfigMapping { 
+  [configKey: string]: ConfigDetails
 }
 
-export interface Obj extends Identifier {
-  stackable: boolean
+// If value is not passed, then the first config value will be used
+// If array is set to true, then the value will be pushed into the array defined by the key
+export type ConfigDetails = {
+  key: string, 
+  value?: ((values: string[]) => any),
+  array?: boolean
 }
 
-export interface Npc extends Identifier {
+export type Config = {
+  key: string, 
+  values: string[]
+}
 
+export type Spawn = { 
+  coordinates: string, 
+  quantity?: string
+}
+
+export type Stock = {
+  shopId: string,
+  shopName: string,
+  objectId: string,
+  objectName: string,
+  amount: string,
+  restock: string,
+  basePrice: string,
+  // soldAt: Number,
+  // boughtAt: Number,
+  // delta: string
+}
+
+export type Drop = {
+
+}
+
+export type Sources = {
+  spawns?: Spawn[],
+  shops?: Stock[],
+  drops?: Drop[]
 }

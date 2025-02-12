@@ -3,7 +3,7 @@ import { IdentifierCache, ObjCache, ShopCache } from "../cache/identifierCache";
 import { Identifier } from "../models/Identifier";
 import Shop from "../models/Shop";
 import { getConfigMappings } from "../resource/configMappings";
-import { IdentifierType, Stock } from "../types/identifiers";
+import { ConfigDetails, IdentifierType, Stock } from "../types/identifiers";
 import { parseConfigLine } from "../utils/parseUtils";
 
 export type SpecialConfigContext = {
@@ -19,12 +19,20 @@ export type SpecialConfigContext = {
 export function handleSpecialConfig(context: SpecialConfigContext): boolean {
   const key = (/.+\d+$/.test(context.key)) ? context.key.substring(0, context.key.search(/\d/)) : context.key;
   switch (key) {
+    case 'desc': parseDesc(context); return true;
     case 'dummyitem': deleteIdentifier(context); return true;
     case 'dummyinv': deleteIdentifier(context); return true;
     case 'category': handleCategory(context); return true;
     case 'param.owned_shop': parseNpcShop(context); return true;
     case 'stock': parseShopStock(context); return true;
     default: return false;
+  }
+}
+
+function parseDesc(context: SpecialConfigContext) {
+  const configDetails: ConfigDetails = getConfigMappings(context.type)[context.key];
+  if (configDetails) {
+    context.identifier.addConfig(configDetails, [ context.values.join(',') ]);
   }
 }
 

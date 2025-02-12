@@ -40,6 +40,7 @@ const npcMappings: ConfigMapping = {
   'magic': {key: 'details.magic'},
   'ranged': {key: 'details.ranged'},
   'undead': {key: 'details.undead', value: mapBooleanValue},
+  'vislevel': {key: 'details.combatlevel'},
   'param.attackrate': {key: 'details.attackrate'},
   'param.attackbonus': {key: 'details.ranged'},
   'param.strengthbonus': {key: 'details.strengthbonus'},

@@ -5,6 +5,7 @@ export class Identifier {
   packId: string;
   name: string = '';
   details: any = {};
+  categories?: string[];
 
   constructor(packLine: string) {
     this.parsePackLine(packLine);
@@ -19,6 +20,11 @@ export class Identifier {
       this.id = split[1];
       this.packId = split[0];
     }
+  }
+
+  addCategory = (category: string): void => {
+    this.categories = this.categories || [];
+    this.categories.push(category);
   }
 
   addConfig = (config: ConfigDetails, values: string[]): void => {

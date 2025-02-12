@@ -31,12 +31,11 @@ export type Stock = {
   shopName?: string,
   objectId?: string,
   objectName?: string,
-  amount: string,
-  restock: string,
+  stock: string,
+  restockTicks: string,
   basePrice: string,
-  // soldAt: Number,
-  // boughtAt: Number,
-  // delta: string
+  soldAt: string,
+  boughtAt: string,
 }
 
 export type Drop = {

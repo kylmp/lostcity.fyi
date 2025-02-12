@@ -2,6 +2,7 @@ import express from 'express';
 import { search } from '../service/searchSvc';
 import { NpcCache, ObjCache } from '../cache/identifierCache';
 import { IdentifierType } from '../types/identifiers';
+import { calculateShopItemPrice } from '../utils/calculator';
 
 const apiRoutes = express.Router();
 
@@ -24,6 +25,22 @@ apiRoutes.get('/identifier', (req, res) => {
       break;
     }
     default: res.status(400).send('Invalid type');
+  }
+});
+
+apiRoutes.get('/calculate-price', (req, res) => {
+  const shopId = req.query['shopId'] as string;
+  const objId = req.query['objId'] as string;
+  const stock = Number(req.query['stock']);
+  if (!shopId || !objId || isNaN(stock)) {
+    res.status(400).send('Missing or invalid required param; Required query params = [shopId: string, objId: string, stock: number]');
+  } else {
+    const prices = calculateShopItemPrice(shopId, objId, stock);
+    if (!prices) {
+      res.status(404).send('Shop or item not found');
+    } else {
+      res.send(prices);
+    }
   }
 });
 

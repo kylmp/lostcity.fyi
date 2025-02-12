@@ -1,3 +1,4 @@
+import * as categoryCache from "../cache/categoryCache";
 import { IdentifierCache, ObjCache, ShopCache } from "../cache/identifierCache";
 import { Identifier } from "../models/Identifier";
 import Shop from "../models/Shop";
@@ -9,6 +10,7 @@ export type SpecialConfigContext = {
   key: string, 
   values: string[], 
   cache: IdentifierCache<any>, 
+  type: IdentifierType,
   identifierId: string, 
   identifier: Identifier, 
   identifierLines: string[]
@@ -19,6 +21,7 @@ export function handleSpecialConfig(context: SpecialConfigContext): boolean {
   switch (key) {
     case 'dummyitem': deleteIdentifier(context); return true;
     case 'dummyinv': deleteIdentifier(context); return true;
+    case 'category': handleCategory(context); return true;
     case 'param.owned_shop': parseNpcShop(context); return true;
     case 'stock': parseShopStock(context); return true;
     default: return false;
@@ -27,6 +30,11 @@ export function handleSpecialConfig(context: SpecialConfigContext): boolean {
 
 function deleteIdentifier(context: SpecialConfigContext) {
   context.cache.delete(context.identifierId);
+}
+
+function handleCategory(context: SpecialConfigContext) {
+  categoryCache.put(context.values[0], context.identifierId, context.type);
+  context.identifier.addCategory(context.values[0]);
 }
 
 function parseNpcShop(context: SpecialConfigContext) {
@@ -60,12 +68,11 @@ function parseShopStock(context: SpecialConfigContext) {
     shopName: shop.name,
     objectId: context.values[0], 
     objectName: obj.name, 
-    amount: context.values[1],
-    restock: context.values[2],
+    stock: context.values[1],
+    restockTicks: context.values[2],
     basePrice: obj.details.cost, 
-    // soldAt: Number(obj.details.cost * shop.details.sellMultiplier),
-    // boughtAt: Number(obj.details.cost * shop.details.buyMultiplier),
-    // delta: shop.details.delta
+    soldAt: String(Math.floor(obj.details.cost * shop.details.sellMultiplier / 1000)),
+    boughtAt: String(Math.floor(obj.details.cost * shop.details.buyMultiplier / 1000)),
   }
   obj.addStock(stock);
   shop.addStock(stock);

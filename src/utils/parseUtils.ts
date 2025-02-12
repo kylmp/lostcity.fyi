@@ -38,6 +38,6 @@ export function mapBooleanValue(values: string[]) {
   return false;
 }
 
-export function mapXpMultiplier(values: string[]) {
+export function divideBy1000(values: string[]) {
   return Number(values[0]) / 1000;
 }

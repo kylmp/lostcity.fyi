@@ -97,7 +97,7 @@ export function parseConfig(type: IdentifierType, fileExt: string): void {
       for (const line of identifierLines) {
         const config: Config | undefined = parseConfigLine(line);
         if (!config) continue;
-        if (handleSpecialConfig({key: config.key, values: config.values, cache: cache, 
+        if (handleSpecialConfig({key: config.key, values: config.values, cache: cache, type: type, 
           identifierId: identifierId, identifier: identifier, identifierLines: identifierLines})) continue;
         const details: ConfigDetails = getConfigMappings(type)[config.key];
         if (!details) continue;
